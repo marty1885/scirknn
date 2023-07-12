@@ -12,7 +12,7 @@ class MLPRegresser:
             self.meta = json.load(f)
 
     def predict(self, x):
-        x = np.array(x)
+        x = np.array(x, dtype=np.float32)
 
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=0)
