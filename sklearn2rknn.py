@@ -24,8 +24,8 @@ def sklearn2onnx(model, batch_size:Optional[int]=None, opset_ver=14) -> tuple[on
     Parameters
     ----------
     model : scikit-learn model
-    batch_size : int, the batch size of the input to the model. This MUST be the same as the batch size used when calling the model for inference.
-        Could be None.
+    batch_size : int, the batch size of the input to the model. This MUST be the same as the batch size used when calling the model for inference
+        If you wish to convert to RLNN later. Could be None if stopping at ONNX.
     opset_ver : int, the ONNX operator set version to use. RKNN only works when this is >= 13 even though it claims to support 12
     """
     activation_functions_map = {
@@ -90,7 +90,7 @@ def onnx2rknn(model, save_path : str, target_platform : str, quantization: bool=
     if rknn.load_onnx(model=model) != 0: return -1
     if quantization == False:
         eprint("WARNING: Quantization is disabled. As of rknn-toolkit2 1.5.0, the NPU only supports quantized models. Inference will run on the CPU.")
-    if rknn.build(do_quantization=quantization, dataset=example_input) != 0: return -1
+    if rknn.build(do_quantization=False, dataset=example_input) != 0: return -1
     rknn.export_rknn(save_path)
     return 0
 
@@ -99,7 +99,7 @@ def sklearn2rknn(model,
         target_platform: str,
         tmp_dir: Optional[str] =None,
         remove_tmp: bool =True,
-        batch_size: Optional[int] = None,
+        batch_size: int = 1,
         quantization: bool = False,
         example_input: Optional[np.ndarray] = None,
     ) -> int:
