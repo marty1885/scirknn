@@ -1,7 +1,8 @@
 import scirknn
+import numpy as np
 
-clf = scirknn.MLPClassifier('xor.rknn')
+clf = scirknn.MLPClassifer('xor.rknn')
 
-x = [1, 0]
+x = np.array([1, 1], dtype=np.float32)
 y = clf.predict(x)
 print(y)
