@@ -15,7 +15,6 @@ Unholy but necessary code that converts scikit-learn's MLP classifer/regresser i
 ```python
 from sklearn.neural_network import MLPClassifier
 import sklearn2rknn # Convers scikit models into RKNN 
-import scirknn # Wrapper to provide easy to use API
 
 # obtain a MLP model 
 x = [[0., 0.], [1., 1.], [2., 2.], [3., 3.]]
@@ -31,16 +30,21 @@ clf.fit(x, y)
 # of 32 elements (if I am not mistaken)
 sklearn2rknn.convert(clf, "example.rknn", "rk3588", quantization=True, example_input=x)
 
-# Now we can load the converted model on your RK3588 system
-model = scirknn.MLPClassifer("example.krnn")
-pred = model.predict([0, 0])
-print(pred) # [0]
 ```
 Or, use the commandline.
 
 ```bash
 python -m sklearn2rknn model.pkl model.rknn --quantization --example_input /path/to/data.npy
 
+```
+
+Now, copy `example.rknn` and `example.rknn.json` to your development board.
+
+```python
+import scirknn # Wrapper to provide easy to use API
+model = scirknn.MLPClassifer("example.krnn")
+pred = model.predict([0, 0])
+print(pred) # [0]
 ```
 
 ## Install
@@ -50,4 +54,18 @@ python -m sklearn2rknn model.pkl model.rknn --quantization --example_input /path
   * only needed for model conversion
 
 [rknn-toolkit-whl]: https://github.com/rockchip-linux/rknn-toolkit2/tree/master/packages
+
+## Running the examples
+
+The examples are stored in the `examples` folder. Every example has 2 files. `train.py` which trains a MLP model and coverts it into RKNN format. By default the training scripts converts for RK3588. And `infer.py` which shold run on the terget device. To run them, invoke them as a module.
+
+```bash
+> python -m example.xor.train
+```
+
+This prduces `xor.rknn` and `xor.rknn.json` in the current working directory. Copy them to your target device. Then run the following command to infer
+
+```bash
+> python -m example.xor.infer
+```
 
