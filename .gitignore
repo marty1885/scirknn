@@ -1,4 +1,5 @@
 __pycache__/
+test_model_store/
 .cache
 *.onnx
 *.pkl
