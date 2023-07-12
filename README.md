@@ -72,6 +72,6 @@ This prduces `xor.rknn` and `xor.rknn.json` in the current working directory. Co
 > python -m example.xor.infer
 I RKNN: [14:45:42.681] RKNN Runtime Information: librknnrt version: 1.5.0 (e6fe0c678@2023-05-25T08:09:20)
 ...
-[0]
+[1]
 ```
 The final line is the output!
