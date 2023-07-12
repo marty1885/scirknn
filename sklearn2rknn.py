@@ -73,9 +73,11 @@ def sklearn2onnx(model, batch_size:Optional[int]=None, opset_ver=14) -> tuple[on
             nodes += [helper.make_node("Add", inputs=[f"output_tmp_mul{i+1}", bias_name], outputs=[f"output_tmp{i+1}"])]
             nodes += [helper.make_node(act_func_name, inputs=[f"output_tmp{i+1}"], outputs=[f"output{i+1}"])]
 
+    # HACK: I don't get why scikit-learn claims output size is 1 when model.predict_proba() returns 2 values
+    output_size = 2 if model.n_outputs_ == 1 and is_classifier else model.n_outputs_
     graph = helper.make_graph(nodes, "scikit2rknn"
         , [helper.make_tensor_value_info("output0", onnx.TensorProto.FLOAT, [batch_size, model.n_features_in_])]
-        , [helper.make_tensor_value_info(f"output{n_layers-1}", onnx.TensorProto.FLOAT, [batch_size, model.n_outputs_])]
+        , [helper.make_tensor_value_info(f"output{n_layers-1}", onnx.TensorProto.FLOAT, [batch_size, output_size])]
     )
     model = helper.make_model(graph)
     # Check the ONNX model is sane
