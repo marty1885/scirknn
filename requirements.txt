@@ -1,0 +1,4 @@
+scikit-learn
+rknn-toolkit2
+onnx
+
