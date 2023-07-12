@@ -1,12 +1,12 @@
-from rknn.api import RKNN
+from rknnlite.api import RKNNLite
 import json
 import numpy as np
 
 class MLPRegresser:
     def __init__(self, model_path):
-        self.rknn = RKNN()
+        self.rknn = RKNNLite()
         self.rknn.load_rknn(model_path)
-        self.rknn.init_runtime()
+        self.rknn.init_runtime(core_mask=RKNNLite.NPU_CORE_0)
 
         with open(model_path + '.json', 'r') as f:
             self.meta = json.load(f)
@@ -20,17 +20,19 @@ class MLPRegresser:
         if not self._shape_check(x.shape):
             accept_shape = self.meta['input_shape']
             raise ValueError(f'Input shape {x.shape} is not acceptible to the model. Accept shape: {accept_shape}')
-        return self.rknn.inference(inputs=[x])
+        return np.array(self.rknn.inference(inputs=[x]))[0]
 
     def __del__(self):
         self.rknn.release()
 
     def _shape_check(self, x):
-        same = x == self.meta['input_shape']
+        accept_shape = tuple(self.meta['input_shape'])
+        x = tuple(x)
+        same = x == accept_shape
         if same: return True
 
-        if self.meta['input_shape'][0] == -1 || self.meta['input_shape'][1] == None:
-            return self.meta['input_shape'][1:] == x[1:]
+        if accept_shape[0] == -1 or accept_shape[0] == None:
+            return accept_shape[1:] == x[1:]
 
 
 class MLPClassifer:
@@ -40,7 +42,8 @@ class MLPClassifer:
 
     def predict(self, x):
         probs = self.predict_proba(x)
-        return self.classes[np.argmax(probs, axis=1))]
+        pred = np.argmax(probs, axis=1)
+        return [self.classes[n] for n in pred]
 
     def predict_proba(self, x):
         return self.regresser.predict(x)
