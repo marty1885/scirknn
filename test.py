@@ -15,7 +15,7 @@ def test_classifier():
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(32, 32), random_state=1)
     clf.fit(x, y)
 
-    assert sklearn2rknn.convert(clf, 'test_model_store/test.rknn', 'rk3588', batch_size=1) == 0
+    sklearn2rknn.convert(clf, 'test_model_store/test.rknn', 'rk3588', batch_size=1)
     assert os.path.exists('test_model_store/test.rknn')
     assert os.path.exists('test_model_store/test.rknn.json')
 

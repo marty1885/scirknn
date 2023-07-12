@@ -25,9 +25,6 @@ clf.fit(x, y)
 # Convert and save the model targeting the RK3588 chip. If successful, this step produces
 # two files. `example.rknn` and `example.rknn.json`. The latter is metadata that is used
 # by wrappers later
-# !!IMPORTANT: You WANT to enable quantization. As of rknn-toolkit2 1.5.0. It
-# Only uses the NPU for fp16 operations and when all input tensor size is a multiple
-# of 32 elements (if I am not mistaken)
 sklearn2rknn.convert(clf, "example.rknn", "rk3588", quantization=True, example_input=x)
 
 ```
@@ -54,6 +51,12 @@ print(pred) # [0]
   * only needed for model conversion
 
 [rknn-toolkit-whl]: https://github.com/rockchip-linux/rknn-toolkit2/tree/master/packages
+
+On your dev board. Install [rknn-toolkit-lite][rknn-tookit-lite-whl] and put the correspending [librknnrt.so][rknnrt] in `/usr/lib`
+
+[rknn-tookit-lite-whl]: https://github.com/rockchip-linux/rknn-toolkit2/tree/master/rknn_toolkit_lite2/packages
+[rknnrt]: https://github.com/rockchip-linux/rknpu2/tree/master/runtime
+
 
 ## Running the examples
 

@@ -86,15 +86,12 @@ def sklearn2onnx(model, batch_size:Optional[int]=None, opset_ver=14) -> tuple[on
     model = version_converter.convert_version(model, opset_ver)
     return model, meta
 
-def onnx2rknn(model, save_path : str, target_platform : str, quantization: bool=False, example_input = None) -> int:
+def onnx2rknn(model, save_path : str, target_platform : str, quantization: bool=False, example_input = None) -> None:
     rknn = RKNN()
-    if rknn.config(target_platform=target_platform) != 0: return -1
-    if rknn.load_onnx(model=model) != 0: return -1
-    if quantization == False:
-        eprint("WARNING: Quantization is disabled. As of rknn-toolkit2 1.5.0, the NPU only supports quantized models. Inference will run on the CPU.")
-    if rknn.build(do_quantization=False, dataset=example_input) != 0: return -1
+    if rknn.config(target_platform=target_platform) != 0: raise RuntimeError(f"Failed to create RKNN config for {target_platform}")
+    if rknn.load_onnx(model=model) != 0: raise RuntimeError(f"Failed to load ONNX model {model}")
+    if rknn.build(do_quantization=False, dataset=example_input) != 0: raise RuntimeError("RKNN build failed")
     rknn.export_rknn(save_path)
-    return 0
 
 def sklearn2rknn(model,
         save_path: str,
@@ -104,7 +101,7 @@ def sklearn2rknn(model,
         batch_size: int = 1,
         quantization: bool = False,
         example_input: Optional[np.ndarray] = None,
-    ) -> int:
+    ) -> None:
     """
     Convert a scikit-learn model to RKNN format.
 
@@ -122,11 +119,17 @@ def sklearn2rknn(model,
     onnx_path = os.path.join(tmp, fname + ".onnx")
     model, meta = sklearn2onnx(model, batch_size=batch_size)
     onnx.save(model, onnx_path)
-    ret = onnx2rknn(onnx_path, save_path, target_platform, quantization=quantization, example_input=example_input)
+    try:
+        onnx2rknn(onnx_path, save_path, target_platform, quantization=quantization, example_input=example_input)
+    except Exception as e:
+        # Remove the temporary ONNX model if the conversion failed
+        # TODO: Need something like RAII or defer to make this clean
+        if remove_tmp: os.remove(onnx_path)
+        raise e
+
     if remove_tmp: os.remove(onnx_path)
     with open(save_path + ".json", "w") as f:
         f.write(json.dumps(meta))
-    return ret
 
 convert = sklearn2rknn
 
