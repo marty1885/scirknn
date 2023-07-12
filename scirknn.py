@@ -46,4 +46,7 @@ class MLPClassifer:
         return [self.classes[n] for n in pred]
 
     def predict_proba(self, x):
-        return self.regresser.predict(x)
+        prob = self.regresser.predict(x)
+        if prob.shape[1] == 1:
+            return np.concatenate([1 - prob, prob], axis=1)
+        return prob
