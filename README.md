@@ -39,7 +39,7 @@ Now, copy `example.rknn` and `example.rknn.json` to your development board.
 
 ```python
 import scirknn # Wrapper to provide easy to use API
-model = scirknn.MLPClassifer("example.krnn")
+model = scirknn.MLPClassifier("example.krnn")
 pred = model.predict([0, 0])
 print(pred) # [0]
 ```
