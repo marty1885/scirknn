@@ -17,22 +17,34 @@ class MLPRegresser:
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=0)
 
-        if not self._shape_check(x.shape):
-            accept_shape = self.meta['input_shape']
-            raise ValueError(f'Input shape {x.shape} is not acceptible to the model. Accept shape: {accept_shape}')
-        return np.array(self.rknn.inference(inputs=[x]))[0]
+        self._shape_check(x.shape)
+
+        single_infer_out_shape = self.meta['output_shape']
+        infer_batch_size = self.meta['output_shape'][0]
+        assert len(x) % infer_batch_size == 0 # Should be guarenteed by the shape check above
+        nruns = len(x) // infer_batch_size
+        out_shape = single_infer_out_shape
+        out_shape[0] = out_shape[0]*nruns
+
+        out = np.zeros(out_shape, dtype=np.float32)
+        for i in range(0, len(x), infer_batch_size):
+            xp = x[i:i+infer_batch_size]
+            out[i:i+infer_batch_size] = np.array(self.rknn.inference(inputs=[xp]), dtype=np.float32)
+        return out
 
     def __del__(self):
         self.rknn.release()
 
-    def _shape_check(self, x):
+    def _shape_check(self, x) -> None:
         accept_shape = tuple(self.meta['input_shape'])
         x = tuple(x)
-        same = x == accept_shape
-        if same: return True
+        if x == accept_shape: return
 
-        if accept_shape[0] == -1 or accept_shape[0] == None:
-            return accept_shape[1:] == x[1:]
+        batch_size = accept_shape[0]
+        if batch_size != -1 and batch_size is not None and x[0] % batch_size != 0:
+            raise ValueError(f"Input has batch size of {x[0]}. Which is not a multiple of {batch_size}, the model's expected size.")
+        if accept_shape[1:] != x[1:]:
+            raise ValueError(f'Input shape {x} mismatch with model. Expecting shape: {accept_shape}')
 
 
 class MLPClassifer:
