@@ -2,6 +2,8 @@
 
 Unholy but necessary code that converts scikit-learn's MLP classifer/regresser into RKNN2 files in order to run on Rockchip NPUs. Because `rknn-toolkit2` does not support the operations `sklearn-onnx` spits out. So you can put your busness logic on the edge (or other things you want to do). Also works around a ton of stuff that ONNX and rknn-toolkit2 expects the other party to solve.
 
+For real, who is training models large enough to need a NPU on sklearn?
+
 ## How it works
 
 * Grabs weights from the sklearn model
