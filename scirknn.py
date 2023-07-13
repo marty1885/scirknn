@@ -47,7 +47,7 @@ class MLPRegresser:
             raise ValueError(f'Input shape {x} mismatch with model. Expecting shape: {accept_shape}')
 
 
-class MLPClassifer:
+class MLPClassifier:
     def __init__(self, model_path):
         self.regresser = MLPRegresser(model_path)
         self.classes = self.regresser.meta['classes']
