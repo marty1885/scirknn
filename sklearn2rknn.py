@@ -88,7 +88,7 @@ def onnx2rknn(model, save_path : str, target_platform : str, quantization: bool=
     rknn = RKNN()
     if rknn.config(target_platform=target_platform) != 0: raise RuntimeError(f"Failed to create RKNN config for {target_platform}")
     if rknn.load_onnx(model=model) != 0: raise RuntimeError(f"Failed to load ONNX model {model}")
-    if rknn.build(do_quantization=False, dataset=example_input) != 0: raise RuntimeError("RKNN build failed")
+    if rknn.build(do_quantization=quantization, dataset=example_input) != 0: raise RuntimeError("RKNN build failed")
     rknn.export_rknn(save_path)
 
 def sklearn2rknn(model,
