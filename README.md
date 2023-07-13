@@ -39,7 +39,7 @@ Now, copy `example.rknn` and `example.rknn.json` to your development board.
 
 ```python
 import scirknn # Wrapper to provide easy to use API
-model = scirknn.MLPClassifer("example.krnn")
+model = scirknn.MLPClassifier("example.krnn")
 pred = model.predict([0, 0])
 print(pred) # [0]
 ```
@@ -72,6 +72,6 @@ This prduces `xor.rknn` and `xor.rknn.json` in the current working directory. Co
 > python -m example.xor.infer
 I RKNN: [14:45:42.681] RKNN Runtime Information: librknnrt version: 1.5.0 (e6fe0c678@2023-05-25T08:09:20)
 ...
-[0]
+[1]
 ```
 The final line is the output!
