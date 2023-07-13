@@ -71,7 +71,7 @@ The examples are stored in the `examples` folder. Every example has 2 files. `tr
 This prduces `xor.rknn` and `xor.rknn.json` in the current working directory. Copy them to your target device. Then run the following command to infer
 
 ```bash
-> ls xor.rknn*                                                             (rknn2)
+> ls xor.rknn*
 xor.rknn  xor.rknn.json
 
 > python -m example.xor.infer
