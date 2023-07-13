@@ -2,7 +2,7 @@ from rknnlite.api import RKNNLite
 import json
 import numpy as np
 
-class MLPRegresser:
+class MLPRegressor:
     def __init__(self, model_path):
         self.rknn = RKNNLite()
         self.rknn.load_rknn(model_path)
@@ -49,8 +49,8 @@ class MLPRegresser:
 
 class MLPClassifier:
     def __init__(self, model_path):
-        self.regresser = MLPRegresser(model_path)
-        self.classes = self.regresser.meta['classes']
+        self.regressor = MLPRegressor(model_path)
+        self.classes = self.regressor.meta['classes']
 
     def predict(self, x):
         probs = self.predict_proba(x)
@@ -58,7 +58,7 @@ class MLPClassifier:
         return [self.classes[n] for n in pred]
 
     def predict_proba(self, x):
-        prob = self.regresser.predict(x)
+        prob = self.regressor.predict(x)
         if prob.shape[1] == 1:
             return np.concatenate([1 - prob, prob], axis=1)
         return prob
